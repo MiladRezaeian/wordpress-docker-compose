@@ -1,32 +1,62 @@
-version: '3'
-
-volumes:
-  tutorial-db:
+version: '3.1'
 
 services:
 
   wordpress:
     image: wordpress:latest
+    container_name: wordpress
+    restart: always
     ports:
-      - "8084:80"
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
     volumes:
-      - ./src:/var/www/html/
-
+      - wordpress:/var/www/html
+    networks:
+      - wordpress
 
   db:
     image: mariadb:latest
-    ports:
-      - 3306:3306
-    volumes:
-      - tutorial-db:/var/lib/mysql
+    container_name: db
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: "123456"
-      MYSQL_USER: "ROOT"
-      MYSQL_PASSWORD: "123456"
-      MYSQL_DATABASE: "tutorial"
-
-  
+      MARIADB_ROOT_PASSWORD: wordpress
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: wordpress
+      MARIADB_RANDOM_ROOT_PASSWORD: yes
+    volumes:
+      - db:/var/lib/mysql
+      - ./my.cnf:/etc/mysql/my.cnf
+    networks:
+      - wordpress
+      
+      
   phpmyadmin:
-      image: phpmyadmin/phpmyadmin
-      ports:
-        - 8080:80
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    links:
+      - db
+    restart: always
+    environment:
+      PMA_USER: wordpress
+      PMA_PASSWORD: wordpress
+      UPLOAD_LIMIT: 0
+      MAX_EXECUTION_TIME: 0
+      MEMORY_LIMIT: -1
+      PMA_ARBITRARY: 1
+    ports:
+      - 8081:80
+    networks:
+      - wordpress
+
+       
+volumes:
+  wordpress:
+  db:
+  
+networks:
+  wordpress:
