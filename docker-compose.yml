@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.8'
 
 services:
 
@@ -13,14 +13,17 @@ services:
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DEBUG: 1
     volumes:
       - wordpress:/var/www/html
+    depends_on:
+      - database
     networks:
       - wordpress
 
-  db:
+  database:
     image: mariadb:latest
-    container_name: db
+    container_name: database
     restart: always
     environment:
       MARIADB_ROOT_PASSWORD: wordpress
@@ -29,7 +32,7 @@ services:
       MARIADB_PASSWORD: wordpress
       MARIADB_RANDOM_ROOT_PASSWORD: yes
     volumes:
-      - db:/var/lib/mysql
+      - database:/var/lib/mysql
       - ./my.cnf:/etc/mysql/my.cnf
     networks:
       - wordpress
@@ -39,7 +42,7 @@ services:
     image: phpmyadmin:latest
     container_name: phpmyadmin
     links:
-      - db
+      - database
     restart: always
     environment:
       PMA_USER: wordpress
@@ -50,13 +53,15 @@ services:
       PMA_ARBITRARY: 1
     ports:
       - 8081:80
+    depends_on:
+      - database
     networks:
       - wordpress
 
        
 volumes:
   wordpress:
-  db:
+  database:
   
 networks:
   wordpress:
