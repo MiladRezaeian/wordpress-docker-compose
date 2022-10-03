@@ -45,12 +45,12 @@ services:
       - database
     restart: always
     environment:
-      PMA_USER: wordpress
-      PMA_PASSWORD: wordpress
-      UPLOAD_LIMIT: 0
-      MAX_EXECUTION_TIME: 0
-      MEMORY_LIMIT: -1
-      PMA_ARBITRARY: 1
+      PMA_USER = wordpress
+      PMA_PASSWORD = wordpress
+      UPLOAD_LIMIT = 0
+      MAX_EXECUTION_TIME = 0
+      MEMORY_LIMIT = -1
+      PMA_ARBITRARY = 1
     ports:
       - 8081:80
     depends_on:
